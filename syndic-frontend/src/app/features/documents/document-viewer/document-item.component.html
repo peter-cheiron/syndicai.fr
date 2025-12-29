@@ -1,0 +1,52 @@
+<article
+  class="rounded-xl border px-3 py-3 flex items-start gap-3"
+  [style.backgroundColor]="'var(--color-surface)'"
+  [style.borderColor]="'var(--color-border)'"
+>
+  <div class="flex-1 space-y-1">
+    <div class="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide" [style.color]="'var(--color-muted)'">
+      <span class="px-2 py-[2px] rounded-full border" [style.borderColor]="'var(--color-border)'">
+        {{ document.type }}
+      </span>
+      <span class="px-2 py-[2px] rounded-full border" [style.borderColor]="'var(--color-border)'">
+        {{ document.language | uppercase }}
+      </span>
+      <span class="font-medium normal-case">{{ document.date | date:'mediumDate' }}</span>
+    </div>
+
+    <h3 class="text-sm font-semibold">
+      {{ document.title }}
+    </h3>
+
+    @if(document.content){
+      <div class="flex flex-wrap gap-2 text-[10px]">
+        
+        <app-doc-viewer [data]="document.content"></app-doc-viewer>
+
+      </div>
+    }
+
+    @if (document.tags?.length) {
+      <div class="flex flex-wrap gap-2 text-[10px]">
+        @for (tag of document.tags; track tag) {
+          <span class="px-2 py-[2px] rounded-full border" [style.borderColor]="'var(--color-border)'">
+            {{ tag }}
+          </span>
+        }
+      </div>
+    }
+  </div>
+
+  @if (document.url) {
+    <a
+      class="text-xs font-semibold px-3 py-1 rounded-md whitespace-nowrap self-center"
+      [style.backgroundColor]="'var(--color-primary)'"
+      [style.color]="'#ffffff'"
+      [href]="document.url"
+      target="_blank"
+      rel="noopener"
+    >
+      Ouvrir
+    </a>
+  }
+</article>

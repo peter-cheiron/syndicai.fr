@@ -1,0 +1,101 @@
+<section class="w-full max-w-5xl space-y-4 m-4" [style.color]="'var(--color-text)'">
+  <header class="flex items-center justify-between">
+    <div>
+      <h2 class="text-base font-semibold">Documents</h2>
+      <p class="text-xs" [style.color]="'var(--color-muted)'">
+        Centralisez les PV, convocations et documents clés de la copropriété.
+      </p>
+    </div>
+    <div class="text-[10px] px-2 py-1 rounded-full border" [style.borderColor]="'var(--color-border)'" [style.color]="'var(--color-muted)'">
+      {{ documents.length }} document{{ documents.length > 1 ? 's' : '' }}
+    </div>
+  </header>
+
+  <div class="flex flex-col lg:flex-row gap-4 items-start">
+    <div class="w-full lg:w-2/5 space-y-2">
+      <div class="text-[11px] font-semibold uppercase tracking-wide" [style.color]="'var(--color-muted)'">
+        Bibliothèque
+      </div>
+
+      @if (documents.length === 0) {
+        <div
+          class="rounded-xl border px-3 py-4 text-xs"
+          [style.backgroundColor]="'var(--color-surface)'"
+          [style.borderColor]="'var(--color-border)'"
+          [style.color]="'var(--color-muted)'"
+        >
+          Aucun document pour l’instant.
+        </div>
+      } @else {
+        <div class="flex flex-col gap-2">
+          @for (document of documents; track document.id) {
+            <article
+              class="rounded-xl border px-3 py-2 text-xs flex flex-col gap-2 cursor-pointer transition-all"
+              (click)="selectDocument(document)"
+              [style.backgroundColor]="selectedDocument()?.id === document.id ? 'var(--color-bg)' : 'var(--color-surface)'"
+              [style.borderColor]="selectedDocument()?.id === document.id ? 'var(--color-primary)' : 'var(--color-border)'"
+              [style.boxShadow]="selectedDocument()?.id === document.id ? 'var(--shadow-elev)' : ''"
+            >
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-[2px] rounded-full border text-[10px] font-semibold uppercase tracking-wide" [style.borderColor]="'var(--color-border)'">
+                    {{ document.type }}
+                  </span>
+                  <span class="px-2 py-[2px] rounded-full border text-[10px] font-semibold uppercase tracking-wide" [style.borderColor]="'var(--color-border)'">
+                    {{ document.language | uppercase }}
+                  </span>
+                </div>
+                <span class="text-[10px]" [style.color]="'var(--color-muted)'">
+                  {{ document.date | date:'mediumDate' }}
+                </span>
+              </div>
+
+              <div class="text-xs font-semibold truncate">
+                {{ document.title }}
+              </div>
+
+              @if (document.tags?.length) {
+                <div class="flex flex-wrap gap-1">
+                  @for (tag of document.tags; track tag) {
+                    <span class="px-2 py-[2px] rounded-full border text-[10px]" [style.borderColor]="'var(--color-border)'">
+                      {{ tag }}
+                    </span>
+                  }
+                </div>
+              }
+
+              <p class="text-[11px] leading-snug" [style.color]="'var(--color-muted)'">
+                {{ documentPreview(document) }}
+              </p>
+            </article>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="w-full lg:flex-1 space-y-3">
+      @if (selectedDocument()) {
+        <building-document-item [document]="selectedDocument()!"></building-document-item>
+
+        @if (selectedDocument()?.text) {
+          <div
+            class="rounded-xl border p-3 text-sm leading-relaxed"
+            [style.backgroundColor]="'var(--color-bg)'"
+            [style.borderColor]="'var(--color-border)'"
+          >
+            {{ selectedDocument()?.text }}
+          </div>
+        }
+      } @else {
+        <div
+          class="rounded-xl border px-3 py-4 text-xs"
+          [style.backgroundColor]="'var(--color-surface)'"
+          [style.borderColor]="'var(--color-border)'"
+          [style.color]="'var(--color-muted)'"
+        >
+          Sélectionnez un document à gauche pour afficher le détail.
+        </div>
+      }
+    </div>
+  </div>
+</section>

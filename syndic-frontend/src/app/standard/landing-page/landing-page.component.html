@@ -1,0 +1,173 @@
+<div class="min-h-screen bg-[color:var(--color-bg)] text-(--color-text)">
+  <main class="max-w-5xl mx-auto px-4 md:px-6 py-10 space-y-16">
+
+    <section class="grid md:grid-cols-[1.1fr_0.9fr] gap-10 items-center">
+      <div class="space-y-5">
+
+        <h1 class="text-3xl md:text-4xl font-semibold leading-tight tracking-tight">
+          {{ 'landing.hero.title' | translate }}
+        </h1>
+
+        <p class="text-base md:text-lg text-(--color-muted) max-w-xl">
+          {{ 'landing.hero.subtitle' | translate }}
+        </p>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <a
+            href="/contact"
+            type="button"
+            class="inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold
+                   bg-[color:var(--color-primary)] text-white
+                   hover:bg-[color:var(--color-primary-600)] transition"
+          >
+            {{ 'landing.hero.request_demo' | translate }}
+        </a>
+
+          <button
+            type="button"
+            class="inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold
+                   border  border-(--color-border)
+                   text-(--color-text)
+                   hover:bg-(--color-surface) transition"
+            (click)="scrollTo('how-it-works')"
+          >
+            {{ 'landing.hero.see_how' | translate }}
+          </button>
+        </div>
+      </div>
+
+<div class="mt-6 aspect-video w-full max-w-3xl mx-auto rounded-2xl overflow-hidden border  border-(--color-border) bg-black">
+  <iframe
+    src="https://www.youtube.com/embed/gowGKfpzHQ0"
+    [title]="'landing.hero.video_title' | translate"
+    class="w-full h-full"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+  ></iframe>
+</div>
+
+    </section>
+
+    <section id="story" class="grid md:grid-cols-1 gap-8 items-start">
+      <h2 class="text-2xl font-semibold">{{ 'landing.problem.title' | translate }}</h2>
+
+      <p class="text-sm text-(--color-muted) leading-relaxed">
+        {{ 'landing.problem.description' | translate }}
+      </p>
+
+      <div class="flex justify-between gap-2">
+        <div>
+        <img class="h-48" src="/assets/images/all.png" />
+        <p class="text-sm text-(--color-muted) leading-relaxed">
+          {{ 'landing.problem.map_all' | translate }}
+        </p>
+      </div>
+        <div>
+      <img class="h-48" src="/assets/images/ben.png" />
+        <p class="text-sm text-(--color-muted) leading-relaxed">
+          {{ 'landing.problem.map_benevol' | translate }}
+        </p>
+      </div>
+        <div>
+      <img class="h-48" src="/assets/images/unknown.png" />
+        <p class="text-sm text-(--color-muted) leading-relaxed">
+          {{ 'landing.problem.map_unknown' | translate }}
+        </p>
+      </div>
+      </div>
+    </section>
+
+    <!---->
+    <section id="story" class="grid md:grid-cols-2 gap-8 items-start">
+      <div class="space-y-4">
+        <h2 class="text-2xl font-semibold">{{ 'landing.helps.title' | translate }}</h2>
+        <p class="text-sm text-(--color-muted) leading-relaxed">
+          {{ 'landing.helps.description_one' | translate }}
+        </p>
+        <p class="text-sm text-(--color-muted) leading-relaxed">
+          {{ 'landing.helps.description_two' | translate }}
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        <div class="rounded-2xl border  border-(--color-border) bg-(--color-surface) p-4">
+          <p class="font-semibold text-sm mb-2">{{ 'landing.helps.card_title' | translate }}</p>
+          <ul class="text-sm text-(--color-muted) space-y-1">
+            <li>&bull; {{ 'landing.helps.point_overview' | translate }}</li>
+            <li>&bull; {{ 'landing.helps.point_documents' | translate }}</li>
+            <li>&bull; {{ 'landing.helps.point_answers' | translate }}</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section id="how-it-works" class="space-y-6">
+      <div>
+        <h2 class="text-2xl font-semibold">{{ 'landing.how_it_works.title' | translate }}</h2>
+        <p class="text-sm text-(--color-muted) max-w-xl mt-2">
+          {{ 'landing.how_it_works.description' | translate }}
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4 text-sm">
+        <div class="rounded-xl border  border-(--color-border) bg-(--color-surface) p-4 space-y-2">
+          <p class="text-xs uppercase tracking-wide text-(--color-muted)">{{ 'landing.how_it_works.step1_label' | translate }}</p>
+          <p class="font-medium">{{ 'landing.how_it_works.step1_title' | translate }}</p>
+          <p class="text-(--color-muted)">
+            {{ 'landing.how_it_works.step1_description' | translate }}
+          </p>
+        </div>
+        <div class="rounded-xl border  border-(--color-border) bg-(--color-surface) p-4 space-y-2">
+          <p class="text-xs uppercase tracking-wide text-(--color-muted)">{{ 'landing.how_it_works.step2_label' | translate }}</p>
+          <p class="font-medium">{{ 'landing.how_it_works.step2_title' | translate }}</p>
+          <p class="text-(--color-muted)">
+            {{ 'landing.how_it_works.step2_description' | translate }}
+          </p>
+        </div>
+        <div class="rounded-xl border  border-(--color-border) bg-(--color-surface) p-4 space-y-2">
+          <p class="text-xs uppercase tracking-wide text-(--color-muted)">{{ 'landing.how_it_works.step3_label' | translate }}</p>
+          <p class="font-medium">{{ 'landing.how_it_works.step3_title' | translate }}</p>
+          <p class="text-(--color-muted)">
+            {{ 'landing.how_it_works.step3_description' | translate }}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stack (kept small) 
+    <section id="stack" class="space-y-4">
+      <h2 class="text-2xl font-semibold">Under the hood</h2>
+      <div class="rounded-2xl border  border-(--color-border) bg-(--color-surface) p-5 text-sm space-y-3">
+        <p class="text-(--color-muted)">
+          The app relies on Angular, Firebase (Auth, Firestore, Storage), and Gemini for reasoning.
+          ElevenLabs is used for the voice component.
+        </p>
+        <div class="flex flex-wrap gap-2 text-xs">
+          <span class="px-3 py-1 rounded-full border  border-(--color-border) bg-[color:var(--color-bg)]">Angular</span>
+          <span class="px-3 py-1 rounded-full border  border-(--color-border) bg-[color:var(--color-bg)]">Firebase</span>
+          <span class="px-3 py-1 rounded-full border  border-(--color-border) bg-[color:var(--color-bg)]">Gemini</span>
+          <span class="px-3 py-1 rounded-full border  border-(--color-border) bg-[color:var(--color-bg)]">ElevenLabs</span>
+        </div>
+      </div>
+    </section>
+    -->
+
+    <!-- Next steps -->
+    <section id="next" class="space-y-4 pb-8">
+      <h2 class="text-2xl font-semibold">{{ 'landing.next.title' | translate }}</h2>
+      <div class="rounded-2xl border  border-(--color-border) bg-(--color-surface) p-5 text-sm space-y-3">
+        <p class="text-(--color-muted)">
+          {{ 'landing.next.description' | translate }}
+        </p>
+        <ul class="text-(--color-muted) space-y-1">
+          <li>&bull; {{ 'landing.next.refine_model' | translate }}</li>
+          <li>&bull; {{ 'landing.next.test_voice' | translate }}</li>
+          <li>&bull; {{ 'landing.next.validate_needs' | translate }}</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+</div>

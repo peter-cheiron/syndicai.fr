@@ -1,0 +1,70 @@
+.ui-input-group {
+  width: 100%;
+  display: block;
+  border-radius: 6px;
+  border: 1px solid #8a8a8a;
+  background: #fff;
+  transition: all 0.1s ease-in-out;
+  font-size: 16px;
+  outline: 2px solid transparent;
+  position: relative;
+  &:hover,
+  &:focus-within {
+    border: 1px solid #333;
+  }
+
+  &:focus-within {
+    outline-color: #33333345;
+  }
+}
+
+.ui-input-group-disabled {
+  background-color: #f3f3f3;
+  cursor: not-allowed;
+  border-color: #d4d4d4 !important;
+
+  .ui-label {
+    color: #9e9ebb;
+    cursor: not-allowed;
+  }
+}
+
+.ui-label {
+  color: #131319;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  padding: 12px 24px 0 24px;
+  position: absolute;
+  white-space: nowrap;
+  top: 0;
+  left: 0;
+}
+
+.ui-label-required::after {
+  content: "*";
+  color: inherit;
+}
+
+.ui-input {
+  outline: none;
+  border: none;
+  width: 100%;
+  text-overflow: ellipsis;
+  padding: 36px 24px 12px 24px;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+  cursor: inherit;
+  background: none;
+}
+
+.dropdown-menu {
+  width: 100%;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+    rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0 0 0 / 0.05) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px;
+}

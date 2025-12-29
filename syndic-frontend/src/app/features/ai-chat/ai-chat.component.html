@@ -1,0 +1,396 @@
+<section class="space-y-4 text-(--color-text) m-8">
+  <!-- Header -->
+
+  <div class="w-full flex gap-2">
+
+      <!-- Chat card -->
+  <div
+    class="w-1/2 rounded-2xl border border-(--color-border) bg-[var(--color-surface)] flex flex-col min-h-[85vh] max-h-[calc(100vh-220px)] shadow-[var(--shadow-elev)]"
+  >
+    <div class="flex justify-end px-3 pt-3">
+      <button
+        type="button"
+        class="px-3 py-1.5 rounded-xl border border-(--color-border) bg-[var(--color-bg)] text-[11px] font-semibold text-(--color-text) hover:border-[var(--color-primary)] disabled:opacity-50 disabled:cursor-not-allowed"
+        (click)="startNewChat()"
+        [disabled]="loadingReply()"
+      >
+        {{ 'ai_chat.new_chat' | translate }}
+      </button>
+    </div>
+
+    <!-- Messages -->
+    <div #messagesContainer class="flex-1 px-3 py-3 space-y-3 overflow-y-auto">
+      @if (messages().length === 0) {
+        <div
+          class="h-full flex flex-col items-center justify-center text-xs text-(--color-muted) gap-1"
+        >
+          <div class="text-sm">{{ 'ai_chat.empty_conversation_title' | translate }}</div>
+          <div>{{ 'ai_chat.empty_conversation_hint' | translate }}</div>
+        </div>
+      } @else {
+        @for (m of messages(); track $index) {
+          <div class="flex">
+            <div
+              class="max-w-[85%] space-y-1"
+              [ngClass]="{
+                'ml-auto text-right': m.from === 'you',
+                'mr-auto text-left': m.from === 'ai'
+              }"
+            >
+              <div
+                class="px-3 py-2 text-sm rounded-2xl"
+                [ngClass]="{
+                  'rounded-br-sm bg-[var(--color-primary)] text-white': m.from === 'you',
+                  'rounded-bl-sm bg-[var(--color-bg)] border border-(--color-border) text-(--color-text)':
+                    m.from === 'ai'
+                }"
+              >
+                @if (m.imageUrl) {
+                  <img
+                    [src]="m.imageUrl"
+                    [alt]="'ai_chat.image_alt' | translate"
+                    class="mb-2 rounded-xl max-h-64 object-cover"
+                  />
+                }
+                <div class="whitespace-pre-wrap break-words">
+                  {{m.text}}
+                </div>
+                <!--
+                <ui-markdown-viewer [markdown]="m.text"></ui-markdown-viewer>
+                -->
+                @if(m.from === 'ai'){
+                  @if(m.references?.length){
+                    <div class="mt-2 flex flex-wrap gap-2">
+                      @for (ref of m.references; track $index) {
+                        <span 
+                          (click)="getReference(ref)"
+                          class="inline-flex items-center gap-1 rounded-full border border-(--color-border) bg-[var(--color-bg)] px-2 py-1 text-[11px] text-(--color-muted)">
+                          {{ ref.type || ('ai_chat.reference' | translate) }} · {{ ref.id }}
+                        </span>
+                      }
+                    </div>
+                  }
+                  <br />
+                   <button
+                    (click)="speak(m.tldr)"
+                    class="h-12 w-12 flex items-center justify-center rounded-full bg-[var(--color-bg)] border border-(--color-border) text-xl"
+                    [disabled]="speaking()"
+                  >
+                    🔊
+                  </button>
+                }
+              </div>
+              <div class="text-[10px] text-(--color-muted)">
+                @if (m.from === 'you') {
+                  {{ 'ai_chat.sender_you' | translate }} · {{ m.ts }}
+                } @else {
+                  {{ 'ai_chat.sender_assistant' | translate }} · {{ m.ts }}
+                }
+              </div>
+            </div>
+          </div>
+        }
+      }
+
+      @if (error()) {
+        <div class="mt-2 text-[10px] text-red-500">
+          {{ error() }}
+        </div>
+      }
+    </div>
+
+    <!-- Bottom chat bar -->
+    <form
+      class="border-t border-(--color-border) px-3 py-2 flex items-center gap-2 bg-[var(--color-surface)]"
+      (ngSubmit)="sendMessage()"
+    >
+      @if (recording() || uploading() || transcribing()) {
+        <!-- ChatGPT-style pill while recording / youcessing -->
+        <div
+          class="flex-1 flex items-center justify-between rounded-full bg-[var(--color-bg)] border border-(--color-border) px-3 py-1.5 text-xs shadow-sm"
+        >
+          <!-- Left + -->
+          <button
+            type="button"
+            class="h-6 w-6 rounded-full border border-(--color-border) flex items-center justify-center text-base leading-none text-(--color-muted)"
+            tabindex="-1"
+          >
+            +
+          </button>
+
+          <!-- Center waveform / status -->
+          <div class="flex-1 mx-3 flex items-center">
+            @if (recording()) {
+              <!-- Fake waveform line -->
+              <div class="relative w-full h-[2px] bg-[var(--color-border)] rounded-full overflow-hidden">
+                <div
+                  class="absolute inset-y-[-2px] w-12 mx-auto left-1/2 -translate-x-1/2"
+                >
+                  <div
+                    class="h-full w-full bg-[var(--color-primary)] animate-pulse"
+                  ></div>
+                </div>
+              </div>
+            } @else if (uploading()) {
+              <span class="text-(--color-muted)">
+                {{ 'ai_chat.uploading_recording' | translate }}
+              </span>
+            } @else if (transcribing()) {
+              <span class="text-(--color-muted)">
+                {{ 'ai_chat.transcribing' | translate }}
+              </span>
+            }
+          </div>
+
+          <!-- Right controls: X / ✓ -->
+          <div class="flex items-center gap-1">
+            <button
+              type="button"
+              class="h-6 w-6 rounded-full bg-[var(--color-bg)] border border-(--color-border) flex items-center justify-center text-[11px]"
+              (click)="cancelRecording()"
+              [attr.aria-label]="'ai_chat.cancel' | translate"
+            >
+              ✕
+            </button>
+
+            <button
+              type="button"
+              class="h-6 w-6 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-[11px]"
+              [disabled]="uploading() || transcribing()"
+              (click)="confirmRecording()"
+              [attr.aria-label]="'ai_chat.stop_and_send' | translate"
+            >
+              ✓
+            </button>
+          </div>
+        </div>
+      } @else {
+        <!-- Normal chat bar: input + mic -->
+        <div class="flex items-center gap-2 flex-1">
+          <div class="relative" (click)="$event.stopPropagation()">
+            <button
+              type="button"
+              class="h-8 w-8 rounded-full flex items-center justify-center border border-(--color-border) bg-[var(--color-bg)] text-lg font-semibold hover:border-[var(--color-primary)] hover:text-[color:var(--color-primary)] transition-colors"
+              (click)="toggleAttachmentMenu($event)"
+              [attr.aria-label]="'ai_chat.open_attachment_options' | translate"
+              aria-haspopup="true"
+              [attr.aria-expanded]="attachmentMenuOpen()"
+            >
+              +
+            </button>
+
+            @if (attachmentMenuOpen()) {
+              <div
+                class="absolute bottom-10 left-0 w-48 rounded-xl border border-(--color-border) bg-[var(--color-surface)] shadow-[var(--shadow-elev)] p-2 space-y-1 z-10"
+                (click)="$event.stopPropagation()"
+              >
+                <button
+                  type="button"
+                  class="w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-lg hover:bg-[var(--color-bg)] text-left"
+                  (click)="triggerCameraCapture($event)"
+                >
+                  <span>📷</span>
+                  <span>{{ 'ai_chat.take_picture' | translate }}</span>
+                </button>
+                <button
+                  type="button"
+                  class="w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-lg hover:bg-[var(--color-bg)] text-left"
+                  (click)="triggerGalleryPicker($event)"
+                >
+                  <span>🖼️</span>
+                  <span>{{ 'ai_chat.upload_photo' | translate }}</span>
+                </button>
+              </div>
+            }
+
+            <input
+              #cameraInput
+              type="file"
+              accept="image/*"
+              capture="environment"
+              class="hidden"
+              (change)="onAttachmentSelected($event)"
+            />
+            <input
+              #galleryInput
+              type="file"
+              accept="image/*"
+              class="hidden"
+              (change)="onAttachmentSelected($event)"
+            />
+          </div>
+
+          <div class="flex-1">
+            <input
+              type="text"
+              name="message"
+              [(ngModel)]="inputText"
+              class="w-full bg-transparent border-none outline-none text-sm placeholder:text-(--color-muted)"
+              [placeholder]="'ai_chat.message_placeholder' | translate"
+            />
+            @if (selectedAttachment()) {
+              <div class="mt-1 flex items-center gap-2 text-[10px] text-(--color-muted)">
+                <span class="inline-flex items-center gap-1 rounded-full border border-(--color-border) bg-[var(--color-bg)] px-2 py-1">
+                  📎 {{ selectedAttachment()?.name }}
+                </span>
+                <button
+                  type="button"
+                  class="text-(--color-muted) hover:text-[color:var(--color-primary)]"
+                  (click)="clearAttachment($event)"
+                >
+                  {{ 'ai_chat.remove' | translate }}
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="h-8 w-8 rounded-full flex items-center justify-center border border-(--color-border) bg-[var(--color-bg)] text-sm hover:border-[var(--color-primary)] hover:text-[color:var(--color-primary)] transition-colors"
+          (click)="startRecording()"
+          [attr.aria-label]="'ai_chat.start_voice_message' | translate"
+        >
+          🎙️
+        </button>
+
+        <button
+          type="submit"
+          class="px-3 py-1.5 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-600)] text-xs font-semibold text-white transition-colors"
+        >
+          {{ 'ai_chat.send' | translate }}
+        </button>
+      }
+    </form>
+  </div>
+
+  
+<!--Results Area: any topic can be displayed here .-->
+  <div class="w-1/2">
+
+    @if (messageSuggestion(); as suggestion) {
+      <div class="mb-3 rounded-2xl border border-[var(--color-primary)] bg-[var(--color-bg)] p-4 shadow-[var(--shadow-elev)]">
+        <div class="flex items-start justify-between gap-3">
+          <div class="space-y-1">
+            <div class="text-[10px] uppercase tracking-wide text-(--color-muted)">
+              {{ 'ai_chat.message_suggested' | translate }}
+            </div>
+            @if (suggestion?.subject) {
+              <div class="text-sm font-semibold text-(--color-text)">
+                {{ suggestion?.subject }}
+              </div>
+            }
+            <div class="text-[11px] text-(--color-muted)">
+              {{ 'ai_chat.recipient' | translate }} : {{ suggestion?.recipient }}
+            </div>
+            @if (suggestion?.body) {
+              <div class="text-[11px] text-(--color-muted)">
+                {{ suggestion?.body }}
+              </div>
+            }
+          </div>
+          <div class="flex flex-col gap-2 shrink-0">
+            <button
+              type="button"
+              class="px-3 py-1.5 rounded-xl bg-[var(--color-primary)] text-white text-xs font-semibold hover:bg-[var(--color-primary-600)] disabled:opacity-50 disabled:cursor-not-allowed"
+              (click)="sendSuggestedMessage()"
+              [disabled]="sendingMessage()"
+            >
+              {{ 'ai_chat.send' | translate }}
+            </button>
+            <button
+              type="button"
+              class="px-3 py-1.5 rounded-xl border border-(--color-border) bg-[var(--color-bg)] text-xs font-semibold text-(--color-text) hover:border-[var(--color-primary)] disabled:opacity-50 disabled:cursor-not-allowed"
+              (click)="cancelMessageSuggestion()"
+              [disabled]="sendingMessage()"
+            >
+              {{ 'ai_chat.cancel' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (taskSuggestion()) {
+      @let task = taskSuggestion();
+      <div class="mb-3 rounded-2xl border border-[var(--color-primary)] bg-[var(--color-bg)] p-4 shadow-[var(--shadow-elev)]">
+        <div class="flex items-start justify-between gap-3">
+          <div class="space-y-1">
+            <div class="text-[10px] uppercase tracking-wide text-(--color-muted)">
+              {{ 'ai_chat.task_suggested' | translate }}
+            </div>
+            <div class="text-sm font-semibold text-(--color-text)">
+              {{ task?.title }}
+            </div>
+            @if (task?.description) {
+              <div class="text-[11px] text-(--color-muted)">
+                {{ task?.description }}
+              </div>
+            }
+            @if (task?.referenceId) {
+              <div class="text-[10px] text-(--color-muted)">
+                {{ 'ai_chat.reference_label' | translate }} {{ task?.referenceId }}
+              </div>
+            }
+          </div>
+          <div class="flex flex-col gap-2 shrink-0">
+            <button
+              type="button"
+              class="px-3 py-1.5 rounded-xl bg-[var(--color-primary)] text-white text-xs font-semibold hover:bg-[var(--color-primary-600)] disabled:opacity-50 disabled:cursor-not-allowed"
+              (click)="createTaskFromSuggestion()"
+              [disabled]="creatingTask()"
+            >
+              {{ 'ai_chat.create' | translate }}
+            </button>
+            <button
+              type="button"
+              class="px-3 py-1.5 rounded-xl border border-(--color-border) bg-[var(--color-bg)] text-xs font-semibold text-(--color-text) hover:border-[var(--color-primary)] disabled:opacity-50 disabled:cursor-not-allowed"
+              (click)="cancelTaskSuggestion()"
+              [disabled]="creatingTask()"
+            >
+              {{ 'ai_chat.cancel' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (allTopics.length) {
+      <div class="grid grid-cols-1 gap-2 max-h-[85vh] overflow-y-auto pr-1">
+        @for (topic of allTopics; track topic.type + '-' + (topic.data?.id ?? $index)) {
+          @let display = getDisplayModel(topic.data);
+          <button
+            type="button"
+            class="w-full text-left rounded-2xl border border-(--color-border) bg-[var(--color-surface)] p-3 shadow-[var(--shadow-elev)] transition-colors hover:border-[var(--color-primary)]"
+            [ngClass]="{
+              'border-[var(--color-primary)]': selectedTopic()?.data?.id === topic.data?.id
+            }"
+            (click)="selectedTopic.set(topic)"
+          >
+            <div class="text-[10px] uppercase tracking-wide text-(--color-muted)">
+              {{ topic.type || ('ai_chat.topic' | translate) }} · {{ display?.id }}
+            </div>
+            <div class="text-sm font-semibold text-(--color-text)">
+              {{ display?.title }}
+            </div>
+            @if (display?.description) {
+              <div class="text-[11px] text-(--color-muted) truncate">
+                {{ display.description }}
+              </div>
+            }
+            <div class="text-[10px] text-(--color-muted)">
+              {{ display?.date | date: 'mediumDate' }}
+            </div>
+          </button>
+        }
+      </div>
+    } @else {
+      <div class="h-full min-h-[200px] rounded-2xl border border-dashed border-(--color-border) bg-[var(--color-bg)] flex items-center justify-center text-(--color-muted)">
+        {{ 'ai_chat.no_topics' | translate }}
+      </div>
+    }
+  </div>
+
+  </div>
+
+</section>

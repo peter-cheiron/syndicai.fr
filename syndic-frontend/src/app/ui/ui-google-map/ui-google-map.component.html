@@ -1,0 +1,64 @@
+<div #root class="ui-input-group" [class.ui-input-group-disabled]="disabled()">
+  <label [for]="id" class="ui-label" [class.ui-label-required]="required()">
+    {{ label() }}
+  </label>
+
+  <div class="relative">
+    <input
+      #input
+      [id]="id"
+      class="ui-input placeholder:text-gray-400"
+      type="text"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [ngModel]="query()"
+      (ngModelChange)="query.set($event)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      (keydown.enter)="onEnter()"
+      autocomplete="off"
+      spellcheck="false"
+      role="combobox"
+      aria-autocomplete="list"
+      [attr.aria-expanded]="open()"
+      aria-haspopup="listbox"
+      />
+
+    <!-- Suggestions panel -->
+    @if (open()) {
+      <div
+        id="{{id}}-listbox"
+        role="listbox"
+        class="absolute z-50 mt-1 w-full bg-white border rounded-lg shadow-xl overflow-hidden"
+        >
+        @for (e of suggestionsList(); track e) {
+          <button
+            type="button"
+            role="option"
+            class="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
+            (mousedown)="select(e.suggestion)"
+            >
+            {{ e.text }}
+          </button>
+        }
+        @if (!suggestionsList().length) {
+          <div class="px-3 py-2 text-sm text-gray-500">
+            No suggestions
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Locate me -->
+  @if (bLocateMe()) {
+    <button
+      type="button"
+      class="mt-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+      (click)="locateAndFill()"
+      [disabled]="locating"
+      >
+      {{ locating ? 'Locating…' : '📍 Locate me' }}
+    </button>
+  }
+</div>

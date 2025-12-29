@@ -1,0 +1,44 @@
+    <div class="space-y-3">
+      <!-- Search input (Places Autocomplete attaches here) -->
+      <input
+        #searchInput
+        type="text"
+        class="search rounded-xl border px-3 py-2 text-base w-full
+               border-[color:var(--color-border,#e5e7eb)]
+               bg-[color:var(--color-surface,#fff)]
+               text-[color:var(--color-text,#111827)]
+               focus:outline-none focus:ring-4
+               focus:ring-[color:var(--color-ring,var(--color-primary,#3b82f6)))]/30"
+        [placeholder]="placeholder()"
+      />
+
+      <!-- Map -->
+      <google-map
+        #map
+        class="map"
+        [center]="center()"
+        [zoom]="zoom()"
+        [options]="mapOptions"
+        (mapClick)="onMapClick($event)"
+      ></google-map>
+
+      <!-- Current selection preview -->
+      @if (value()) {
+        <div class="text-sm text-(--color-muted,#6b7280)">
+          @if (value()?.name) {
+            <div class="font-medium text-[color:var(--color-text,#111827)]">
+              {{ value()?.name }}
+            </div>
+          }
+          @if (value()?.address) {
+            <div>{{ value()?.address }}</div>
+          }
+          <div class="mt-1">
+            <span class="text-xs">
+              ({{ value()?.location.lat | number:'1.6-6' }},
+               {{ value()?.location.lng | number:'1.6-6' }})
+            </span>
+          </div>
+        </div>
+      }
+    </div>

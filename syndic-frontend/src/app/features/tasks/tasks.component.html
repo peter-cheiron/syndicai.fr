@@ -1,0 +1,122 @@
+<section class="w-full max-w-5xl space-y-4 m-4">
+  <header class="flex items-center justify-between">
+    <div>
+      <h2 class="text-base font-semibold">Tasks</h2>
+      <p class="text-xs" [style.color]="'var(--color-muted)'">
+        Your current task list.
+      </p>
+    </div>
+    <div class="text-[10px] px-2 py-1 rounded-full border" [style.borderColor]="'var(--color-border)'" [style.color]="'var(--color-muted)'">
+      {{ tasks().length }} document{{ tasks().length > 1 ? 's' : '' }}
+    </div>
+  </header>
+
+
+<div class="flex flex-col md:flex-row gap-4 md:gap-6 items-stretch min-h-[320px]">
+  <!-- Left: task list -->
+  <div
+    class="md:w-1/3 lg:w-1/3 border  border-(--color-border) rounded-xl
+           bg-[color:var(--color-bg)] p-3.5 md:p-4 flex flex-col gap-3"
+  >
+    <div class="text-sm font-semibold text-(--color-text)">
+      Tasks
+    </div>
+
+    @if (tasks().length) {
+      <div class="flex flex-col gap-2">
+        @for (task of tasks(); track task.id) {
+          <div
+            (click)="selectTask(task)"
+            class="rounded-xl px-3 py-2.5 bg-(--color-surface)
+                   border cursor-pointer transition-all"
+            [ngClass]="{
+              'border-[color:var(--color-primary)] shadow-[0_6px_16px_rgba(16,185,129,0.18)]':
+                selectedTask()?.id === task.id,
+              ' border-(--color-border) hover:border-[color:var(--color-primary)] hover:shadow-sm':
+                selectedTask()?.id !== task.id
+            }"
+          >
+            <div class="font-semibold text-sm mb-1 text-(--color-text)">
+              {{ task.title }}
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 text-[11px] text-(--color-muted)">
+              <span
+                class="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700
+                       capitalize"
+              >
+                {{ task.status }}
+              </span>
+              <span
+                class="px-2 py-0.5 rounded-full bg-cyan-50 text-cyan-700
+                       capitalize"
+              >
+                {{ task.priority }}
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="text-sm text-(--color-muted)">
+        No tasks yet.
+      </div>
+    }
+  </div>
+
+  <!-- Right: task details -->
+  <div
+    class="flex-1 border  border-(--color-border) rounded-xl
+           bg-(--color-surface) p-4 md:p-5"
+  >
+    @if (selectedTask(); as task) {
+      <div class="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+        <div class="text-base md:text-lg font-bold text-(--color-text)">
+          {{ task.title }}
+        </div>
+
+        <div class="flex flex-wrap gap-1.5">
+          <span
+            class="px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700
+                   text-[11px] capitalize"
+          >
+            {{ task.status }}
+          </span>
+          <span
+            class="px-2.5 py-1 rounded-full bg-cyan-50 text-cyan-700
+                   text-[11px] capitalize"
+          >
+            {{ task.priority }}
+          </span>
+        </div>
+      </div>
+
+      <div class="text-sm text-(--color-muted) leading-relaxed mb-3">
+        {{ task.description || 'No description provided.' }}
+      </div>
+
+      <div class="flex flex-wrap gap-3 text-[11px] text-(--color-muted)">
+        @if (task.referenceId) {
+          <div>Ref: {{ task.referenceId }}</div>
+        }
+        @if (task.dueDate) {
+          <div>
+            Due:
+            {{ task.dueDate | timetodate | date: 'mediumDate' }}
+          </div>
+        }
+        <div>
+          Created:
+          {{ task.createdAt | timetodate | date: 'mediumDate' }}
+        </div>
+      </div>
+    } @else {
+      <div class="text-sm text-(--color-muted)">
+        Select a task from the list to view details.
+      </div>
+    }
+  </div>
+</div>
+
+
+</section>
